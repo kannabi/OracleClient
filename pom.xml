@@ -35,6 +35,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/libs/ojdbc7.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.1.6</version>
+        </dependency>
     </dependencies>
 
 </project>

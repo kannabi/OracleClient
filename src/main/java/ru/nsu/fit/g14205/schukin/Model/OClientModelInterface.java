@@ -11,5 +11,9 @@ public interface OClientModelInterface {
 
     void setPresenter(OClientPresenterInterface presenter);
 
-    boolean loginDatabase(String);
+    boolean loginDatabase(String ip,
+                          String port,
+                          String login,
+                          String password,
+                          String schema);
 }

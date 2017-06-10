@@ -1,23 +1,23 @@
 package ru.nsu.fit.g14205.schukin.DatabaseWorker;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableColumn;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableRow;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.Table;
+import rx.subjects.PublishSubject;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class WorkerWithDatabase implements LoginInterface {
+public class DatabaseWorker implements DatabaseWorkerInterface {
     private Connection connection = null;
     private String schema;
-    private ObservableList<StringProperty> tablesNames;
+//    private ObservableList<StringProperty> tablesNames;
+    private List<String> tablesNames;
+    private PublishSubject <List<String>> tablesObserver = PublishSubject.create();
 
 //    public boolean login(Pair<String, String> ipPort, Pair<String, String> logPass, String schema) {
     public boolean login(String ip,
@@ -61,8 +61,6 @@ public class WorkerWithDatabase implements LoginInterface {
 
     public void closeConnection() throws SQLException  {
         connection.close();
-
-
     }
 
     public void updateTables() throws SQLException {
@@ -74,14 +72,21 @@ public class WorkerWithDatabase implements LoginInterface {
 
         while (resultSet.next()) {
             try {
-                tablesNames.add(new SimpleStringProperty(resultSet.getString(1)));
+//                tablesNames.add(new SimpleStringProperty(resultSet.getString(1)));
+                tablesNames.add(resultSet.getString(1));
             } catch (SQLException ex) {
                 continue;
             }
         }
+
+        tablesObserver.onNext(tablesNames);
     }
 
-    public ObservableList<StringProperty> getTablesNames() throws SQLException {
+//    public ObservableList<StringProperty> getTablesNames() throws SQLException {
+//        return tablesNames;
+//    }
+
+    public List<String> getTablesNames() throws SQLException {
         return tablesNames;
     }
 
@@ -362,9 +367,10 @@ public class WorkerWithDatabase implements LoginInterface {
         }
     }
 
+
     public void setNotNull(Table table, String columnName, boolean value) throws SQLException {
         String query;
-        if (value == true) {
+        if (value) {
             query = "ALTER TABLE " + table.getName() + " MODIFY ( " + columnName + " NOT NULL)";
         } else {
             query = "ALTER TABLE " + table.getName() + " MODIFY ( " + columnName + " NULL)";
@@ -375,6 +381,7 @@ public class WorkerWithDatabase implements LoginInterface {
 
         table.setColumnNotNull(columnName, value);
     }
+
 
     public void updatePrimaryKeys(Table table, List<String> primaryKeys) throws SQLException {
         if (table.getPrimaryKeys().size() == 0 && primaryKeys.size() == 0)
@@ -389,6 +396,7 @@ public class WorkerWithDatabase implements LoginInterface {
         setPrimaryKeys(table, primaryKeys);
     }
 
+
     public void dropPrimaryKeys(Table table) throws SQLException {
         String query = "ALTER TABLE " + table.getName() + " DROP PRIMARY KEY";
 
@@ -397,6 +405,7 @@ public class WorkerWithDatabase implements LoginInterface {
 
         table.clearPrimaryKeys();
     }
+
 
     public void setPrimaryKeys(Table table, List<String> pk) throws SQLException {
         if (pk.size() == 0) {
@@ -419,6 +428,8 @@ public class WorkerWithDatabase implements LoginInterface {
         table.addColumnPkConstraint(pk, pkConstraintName);
     }
 
+
+    //TODO: убрать fx в методе updateForeignKeys
     public void updateForeignKeys(Table table, List<Pair<String, String>> foreignKeys) throws SQLException {
         for (int i = 0; i < foreignKeys.size(); i++) {
             Pair<String, String> pair = foreignKeys.get(i);
@@ -429,6 +440,8 @@ public class WorkerWithDatabase implements LoginInterface {
         }
     }
 
+
+    //TODO: убрать fx в методе setForeignKey
     public void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException {
         if (foreignKey.getKey().equals("") && foreignKey.getValue().equals("") && column.getFkColumn() == null && column.getFkTable() == null)
             return;
@@ -451,6 +464,7 @@ public class WorkerWithDatabase implements LoginInterface {
         table.setColumnFk(column.getName(), foreignKey.getKey(), foreignKey.getValue(), fkName);
     }
 
+
     public void dropForeignKey(Table table, MyTableColumn column) throws SQLException {
         if (column.getFkColumn() == null && column.getFkTable() == null)
             return;
@@ -468,7 +482,8 @@ public class WorkerWithDatabase implements LoginInterface {
         statement.executeUpdate(query);
 
         for (int i = 0; i < tablesNames.size(); i++) {
-            if (table.getName().equals(tablesNames.get(i).get())) {
+//            if (table.getName().equals(tablesNames.get(i).get())) {
+            if (table.getName().equals(tablesNames.get(i))) {
                 tablesNames.remove(i);
                 break;
             }
@@ -477,14 +492,13 @@ public class WorkerWithDatabase implements LoginInterface {
 
     public ResultSet workerExecuteQuery(String query) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
 
-        return resultSet;
+        return statement.executeQuery(query);
     }
 
-    public void workerExecute(String query) throws SQLException {
+    public boolean workerExecute(String query) throws SQLException {
         Statement statement = connection.createStatement();
-        statement.execute(query);
+        return statement.execute(query);
     }
 
     public void createNewTable(Table table) throws SQLException {
@@ -494,7 +508,8 @@ public class WorkerWithDatabase implements LoginInterface {
         statement.executeUpdate(query);
         connection.commit();
 
-        tablesNames.add(new SimpleStringProperty(table.getName().toUpperCase()));
+//        tablesNames.add(new SimpleStringProperty(table.getName().toUpperCase()));
+        tablesNames.add(table.getName().toUpperCase());
     }
 
     private String getCreateTableString(Table table) {
