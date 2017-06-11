@@ -1,5 +1,10 @@
 package ru.nsu.fit.g14205.schukin;
 
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorker;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorkerInterface;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableColumn;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableRow;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.Table;
 import ru.nsu.fit.g14205.schukin.Model.OClientModel;
 import ru.nsu.fit.g14205.schukin.Model.OClientModelInterface;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenter;
@@ -7,6 +12,8 @@ import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.Utils.EDTInvocationHandler;
 import ru.nsu.fit.g14205.schukin.View.OClientView;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
+
+import java.sql.SQLException;
 
 /**
  * Created by kannabi on 10.06.2017.
@@ -25,6 +32,5 @@ public class Main {
                 presenter.run();
             }
         });
-        
     }
 }

@@ -1,38 +1,39 @@
 package ru.nsu.fit.g14205.schukin.DatabaseWorker.Table;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyTableRow {
-    private ObservableList<StringProperty> data;
-    private ObservableList<StringProperty> newData;
+    @Getter
+    private List<String> data;
+    private List<String> newData;
 
     public MyTableRow() {
-        data = FXCollections.observableArrayList();
-        newData = FXCollections.observableArrayList();
+        data = new ArrayList<>();
+        newData = new ArrayList<>();
     }
 
     public void addValue(String value) {
-        data.add(new SimpleStringProperty(value));
-        newData.add(new SimpleStringProperty(value));
+        data.add(value);
+        newData.add(value);
     }
 
-    public StringProperty getValue(int index) {
+    public String getValue(int index) {
         return data.get(index);
     }
 
-    public StringProperty getNewValue(int index) {
+    public String getNewValue(int index) {
         return newData.get(index);
     }
 
     public void setValue(int index, String value) {
-        data.get(index).setValue(value);
+        data.set(index, value);
     }
 
     public void setNewValue(int index, String value) {
-        newData.get(index).setValue(value);
+        newData.set(index, value);
     }
 
     public int getDataSize() {
@@ -41,18 +42,11 @@ public class MyTableRow {
 
     public void commitNewData() {
         data.clear();
-
-        for (StringProperty value : newData) {
-            data.add(new SimpleStringProperty(value.get()));
-        }
-
-        return;
+        data.addAll(newData);
     }
 
     public void deleteData(int index) {
         data.remove(index);
         newData.remove(index);
-
-        return;
     }
 }

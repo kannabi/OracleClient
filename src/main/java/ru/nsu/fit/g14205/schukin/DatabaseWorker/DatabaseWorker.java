@@ -31,7 +31,7 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
             connection = DriverManager.getConnection(getConnectURL(ip, port, schema), login, password);
 //            connection = DriverManager.getConnection(getConnectURL(ipPort, schema), "system", "Ss148819695674");
-            tablesNames = FXCollections.observableArrayList();
+            tablesNames = new ArrayList<>();
             updateTables();
             this.schema = schema;
 
@@ -90,11 +90,8 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         return tablesNames;
     }
 
-    private String getConnectURL(String ip, String port, String schema) {
-//        System.out.println("jdbc:oracle:thin:@" + ip + ":" + port + ":xe");
+    private String  getConnectURL(String ip, String port, String schema) {
         return "jdbc:oracle:thin:@localhost:1521:xe";
-//        System.out.println(ip);
-//        System.out.println(port);
 //        return "jdbc:oracle:thin:@" + ip + ":" + port + ":xe";
     }
 
@@ -183,24 +180,30 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         updateString.append("UPDATE " + table.getName() + " SET ");
 
         for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-            if (myTableRow.getNewValue(i).get() == null) {
+//            if (myTableRow.getNewValue(i).get() == null) {
+            if (myTableRow.getNewValue(i) == null) {
                 updateString.append(table.getColumnName(i) + " = NULL, ");
             } else {
-                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getNewValue(i).get() + "', ");
+//                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getNewValue(i).get() + "', ");
+                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getNewValue(i) + "', ");
             }
         }
-        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getNewValue(myTableRow.getDataSize() - 1).get() + "' ");
+//        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getNewValue(myTableRow.getDataSize() - 1).get() + "' ");
+        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getNewValue(myTableRow.getDataSize() - 1) + "' ");
 
         updateString.append("WHERE ");
         for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-            if (myTableRow.getValue(i).get() == null) {
+//            if (myTableRow.getValue(i).get() == null) {
+            if (myTableRow.getValue(i) == null) {
                 updateString.append(table.getColumnName(i) + " = NULL, ");
             } else {
-                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
+//                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
+                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i) + "' AND ");
             }
         }
 
-        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
+//        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
+        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "' ");
 
         return updateString.toString();
     }
@@ -219,14 +222,17 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
         deleteString.append(" WHERE ");
         for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-            if (myTableRow.getValue(i).get() == null) {
+//            if (myTableRow.getValue(i).get() == null) {
+            if (myTableRow.getValue(i) == null) {
                 deleteString.append(table.getColumnName(i) + " = NULL, ");
             } else {
-                deleteString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
+//                deleteString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
+                deleteString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i) + "' AND ");
             }
         }
 
-        deleteString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
+//        deleteString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
+        deleteString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "' ");
 
         return deleteString.toString();
     }
@@ -244,10 +250,12 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         StringBuilder insertString = new StringBuilder("INSERT INTO " + table.getName() + " VALUES (");
 
         for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-            insertString.append("'" + myTableRow.getValue(i).getValue() + "', ");
+//            insertString.append("'" + myTableRow.getValue(i).getValue() + "', ");
+            insertString.append("'" + myTableRow.getValue(i) + "', ");
         }
 
-        insertString.append("'" + myTableRow.getValue(myTableRow.getDataSize() - 1).getValue() + "')");
+//        insertString.append("'" + myTableRow.getValue(myTableRow.getDataSize() - 1).getValue() + "')");
+        insertString.append("'" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "')");
 
         return insertString.toString();
     }

@@ -23,4 +23,8 @@ public interface OClientModelInterface {
                           String schema);
 
     List<String> getTablesName();
+
+    List<String> getTableColumnsName(String tableName);
+
+    List<List<String>> getTableRows(String tableName);
 }

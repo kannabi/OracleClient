@@ -4,33 +4,24 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Table {
-    private final StringProperty name;
-    private ObservableList<MyTableColumn> columns;
-    private ObservableList<MyTableRow> rows;
+    @Getter
+    private final String name;
+    @Getter
+    private List<MyTableColumn> columns = new ArrayList<>();
+    @Getter
+    private List<MyTableRow> rows = new ArrayList<>();
     private String pkConstraintName = null;
     private List<MyTableColumn> primaryKeys = new ArrayList<>();
 
     public Table(String name) {
-        this.name = new SimpleStringProperty(name);
-        columns = FXCollections.observableArrayList();
-        rows = FXCollections.observableArrayList();
-    }
-
-    public String getName() {
-        return name.get();
-    }
-
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    public StringProperty nameProperty() {
-        return name;
+        this.name = name.toUpperCase();
     }
 
     public void addColumn(String name, boolean isNullable, boolean isPrimaryKey, String type, String defaultValue) {
@@ -41,21 +32,13 @@ public class Table {
             primaryKeys.add(column);
     }
 
-    public ObservableList<MyTableColumn> getColumns() {
-        return columns;
-    }
-
     public void addRow(MyTableRow row) {
         rows.add(row);
     }
 
-    public ObservableList<MyTableRow> getRows() {
-        return rows;
-    }
-
     public String getColumnType(String columnName) {
         for (MyTableColumn column : columns) {
-            if (column.getName() == columnName)
+            if (column.getName().equals(columnName))
                 return column.getType();
         }
 
