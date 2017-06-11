@@ -69,10 +69,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
                         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         tableNameList.getSelectionModel().addListSelectionListener((e) ->{
-//            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-//            System.out.println(e.getFirstIndex());
             if(e.getValueIsAdjusting()) {
-//                System.out.println(tableNameList.getSelectedValue());
                 loadTableOnDataPane(tableNameList.getSelectedValue());
             }
         });
@@ -83,30 +80,35 @@ public class OClientView extends JFrame implements OClientViewInterface {
         tableListModel = new DefaultListModel<>();
         tableNameList = new JList<>(tableListModel);
 
-        dataTable = new JTable();
-        
+        dataTable = new JTable(){
+            private static final long serialVersionUID = 1L;
+
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
     }
 
     private void loadTableOnDataPane(String tableName){
-        Vector<Object> columns = new Vector<>(model.getTableColumnsName(tableName).stream().
-                map(o -> (Object)o).collect(Collectors.toList()));
-        Vector<Vector<Object>> data = new Vector<>(
-                model.getTableRows(tableName).
-                stream().map(o -> new Vector<>((o.stream().map(i -> (Object) i)).collect(Collectors.toList())))
+        new Thread(() ->{
+            Vector<Object> columns = new Vector<>(model.getTableColumnsName(tableName).stream().
+                    map(o -> (Object)o).collect(Collectors.toList()));
+            Vector<Vector<Object>> data = new Vector<>(
+                    model.getTableRows(tableName).
+                            stream().map(o -> new Vector<>((o.stream().map(i -> (Object) i)).collect(Collectors.toList())))
                             .collect(Collectors.toList()));
-
-//        for (List<String> row : model.getTableRows(tableName)){
-//            data.add(row.stream().map(o -> (Object)o).collect(Collectors.toList()).toArray());
-//        }
-
-        System.out.println(data);
-        repaintDataTable(columns, data);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            repaintDataTable(columns, data);
+        }).start();
     }
 
     @RequiresEDT
     private void repaintDataTable(Vector<Object> columns, Vector<Vector<Object>> data){
         dataTable.setModel(new DefaultTableModel(data, columns));
         dataTable.repaint();
-//        dataTable = new JTable(data, columns);
     }
 }
