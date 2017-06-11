@@ -1,8 +1,12 @@
 package ru.nsu.fit.g14205.schukin.Model;
 
-import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorker;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorkerInterface;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
+
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by kannabi on 10.06.2017.
@@ -10,14 +14,17 @@ import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
 public class OClientModel implements OClientModelInterface {
     OClientPresenterInterface presenter;
     OClientViewInterface view;
-    DatabaseWorker worker;
+    DatabaseWorkerInterface worker;
 
-    public OClientModel() {
-    }
+    public OClientModel() {}
 
     public void setPresenter(OClientPresenterInterface presenter){
         this.presenter = presenter;
+    }
 
+    public void setDatabaseWorker(DatabaseWorkerInterface worker){
+        this.worker = worker;
+        worker.login("localhost", "1251", "kannabii", "kan", "kannabii");
     }
 
     public void setView(OClientViewInterface view){
@@ -30,5 +37,14 @@ public class OClientModel implements OClientModelInterface {
                                  String password,
                                  String schema){
         return worker.login(ip, port, login, password, schema);
+    }
+
+    public List<String> getTablesName(){
+        try {
+            return worker.getTablesNames();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return new LinkedList<>();
+        }
     }
 }

@@ -1,7 +1,10 @@
 package ru.nsu.fit.g14205.schukin.Model;
 
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorkerInterface;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
+
+import java.util.List;
 
 /**
  * Created by kannabi on 10.06.2017.
@@ -11,9 +14,13 @@ public interface OClientModelInterface {
 
     void setPresenter(OClientPresenterInterface presenter);
 
+    void setDatabaseWorker(DatabaseWorkerInterface worker);
+
     boolean loginDatabase(String ip,
                           String port,
                           String login,
                           String password,
                           String schema);
+
+    List<String> getTablesName();
 }

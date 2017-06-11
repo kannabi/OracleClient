@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.schukin.Presenter;
 
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorker;
 import ru.nsu.fit.g14205.schukin.Model.OClientModelInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
 
@@ -20,6 +21,7 @@ public class OClientPresenter implements OClientPresenterInterface {
 
     public void run(){
         model.setPresenter(this);
+        model.setDatabaseWorker(new DatabaseWorker());
         view.setPresenter(this);
         view.setModel(model);
         view.initUI();

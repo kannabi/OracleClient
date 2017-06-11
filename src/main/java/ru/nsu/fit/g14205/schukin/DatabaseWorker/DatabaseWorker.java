@@ -91,9 +91,11 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
     }
 
     private String getConnectURL(String ip, String port, String schema) {
-        String url = "jdbc:oracle:thin:@" + ip + ":" + port + ":xe";
-//        String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        return url;
+//        System.out.println("jdbc:oracle:thin:@" + ip + ":" + port + ":xe");
+        return "jdbc:oracle:thin:@localhost:1521:xe";
+//        System.out.println(ip);
+//        System.out.println(port);
+//        return "jdbc:oracle:thin:@" + ip + ":" + port + ":xe";
     }
 
     public Table getTable(String tableName) throws SQLException {
