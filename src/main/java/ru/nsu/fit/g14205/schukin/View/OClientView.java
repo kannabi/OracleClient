@@ -10,12 +10,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static javax.swing.SwingUtilities.updateComponentTreeUI;
 
 /**
  * Created by kannabi on 10.06.2017.
@@ -42,10 +47,19 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JButton deleteRowButton;
     private JButton addRowButton;
     private JButton refreshButton;
-    private JButton applyChangesButton;
+    private JPanel configurationPanel;
+    private JTable configurationTable;
 
-    DefaultListModel<String> tableListModel;
-    TableModel tableDataTableModel;
+    private DefaultListModel<String> tableListModel;
+    private TableModel tableDataTableModel;
+    private List<String> configurationColumnNames = new LinkedList<>(Arrays.asList("Column name",
+                                                                "Column type",
+                                                                "Default value",
+                                                                "Primary key",
+                                                                "Not null",
+                                                                "Foreign key(to table)",
+                                                                "Foreign key (to column)",
+                                                                " "));
 
     public OClientView() {
     }
@@ -62,6 +76,19 @@ public class OClientView extends JFrame implements OClientViewInterface {
     public void initUI(){
         setTitle("Oracle Client");
         setContentPane(contentPane);
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            updateComponentTreeUI(this);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
 
         setUpTableViewTab();
         setUpQueryTab();
@@ -86,10 +113,6 @@ public class OClientView extends JFrame implements OClientViewInterface {
         {
             private static final long serialVersionUID = 1L;
 
-//            public boolean isCellEditable(int row, int column) {
-//                return false;
-//            }
-
             @Override
             public void setValueAt(Object aValue, int row, int column){
                 List<String> oldData = new ArrayList<>();
@@ -102,8 +125,26 @@ public class OClientView extends JFrame implements OClientViewInterface {
                     newData.add((String) dataTable.getValueAt(row, i));
                 }
                 System.out.println(newData);
-                model.updateRow(dataTable.getSelectedRow(),oldData, newData);
+                model.updateRow(dataTable.getSelectedRow(), oldData, newData);
                 refreshDataTable();
+            }
+        };
+
+        configurationTable = new JTable(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 3:
+                        return Boolean.class;
+                    case 4:
+                        return Boolean.class;
+//                    case 7:
+//                        return JButton.class;
+                    default:
+                        return String.class;
+                }
             }
         };
     }
@@ -138,6 +179,22 @@ public class OClientView extends JFrame implements OClientViewInterface {
         new Thread(() ->{
             List<Vector> res = castToList(model.getTableColumnsName(tableName), model.getTableRows(tableName));
             repaintTable(res.get(0), res.get(1), dataTable);
+            res = castToList(configurationColumnNames, new LinkedList<>());
+            Vector<Vector<Object>> v = new Vector<>();
+            v.add(new Vector<>(Arrays.asList(" ", " ", " ", true, true, " ", " ", "Delete")));
+            repaintTable(res.get(0), v, configurationTable);
+
+            Action delete = new AbstractAction()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    JTable table = (JTable)e.getSource();
+                    int modelRow = Integer.valueOf(e.getActionCommand());
+                    ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+                }
+            };
+
+            ButtonColumn buttonColumn = new ButtonColumn(configurationTable, delete, 7);
         }).start();
     }
 
@@ -150,7 +207,6 @@ public class OClientView extends JFrame implements OClientViewInterface {
 //            });
         }
     }
-
 
     /*
     * Конец секции для tableview таба
@@ -202,7 +258,9 @@ public class OClientView extends JFrame implements OClientViewInterface {
 
     @RequiresEDT
     private void repaintTable(Vector<Object> columns, Vector<Vector<Object>> data, JTable table){
-        System.out.println(columns);
+//        System.out.println(columns);
+//        System.out.println(data);
+//        System.out.println();
         table.setModel(new DefaultTableModel(data, columns));
         table.repaint();
     }

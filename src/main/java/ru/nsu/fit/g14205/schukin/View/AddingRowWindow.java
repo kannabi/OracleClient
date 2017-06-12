@@ -29,15 +29,15 @@ public class AddingRowWindow extends JDialog {
 
         JPanel main = new JPanel(new BorderLayout());
 
-        GridLayout grid = new GridLayout(0, 2);
-        JPanel fields = new JPanel(grid);
-
         JPanel buttonsPanel = new JPanel(new GridLayout(0, 2));
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
 
         okButton.addActionListener((e -> onOk()));
         cancelButton.addActionListener((e -> onCancel()));
+
+        GridLayout grid = new GridLayout(0, 2);
+        JPanel fields = new JPanel(grid);
 
         JTextField textField;
         for (String f : columns){
