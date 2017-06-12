@@ -6,8 +6,11 @@ import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableRow;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,5 +74,74 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
             return new LinkedList<>();
         }
+    }
+
+    public List<Object> executeQeury(String query){
+        List<Object> res = new LinkedList<>();
+
+        try {
+            ResultSet resultSet = worker.workerExecuteQuery(query);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            res.add("OK");
+
+            List<String> columnsNames = new ArrayList<>();
+            for (int i = 1; i <= metaData.getColumnCount(); i++)
+                columnsNames.add(metaData.getColumnName(i));
+
+            res.add(columnsNames);
+
+            List<List<String>> rows = new LinkedList<>();
+            List<String> row;
+            while (resultSet.next()) {
+                row = new LinkedList<>();
+
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    if (resultSet.getObject(i) == null) {
+                        row.add(null);
+                    } else {
+                        row.add(resultSet.getObject(i).toString());
+                    }
+                }
+
+                rows.add(row);
+            }
+
+            res.add(rows);
+
+            return res;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res.add(e.getMessage());
+            return res;
+        }
+    }
+
+    private String convertTableToString(List<String> columnNames, List<List<String>> rows){
+        StringBuffer res = new StringBuffer();
+        int [] columnSizes = new int[columnNames.size()];
+
+        for (int i = 0; i < columnNames.size(); ++i){
+            int finalI = i;
+            columnSizes[i] = Collections.max(
+                    rows.parallelStream().map(o -> o.get(finalI).length()).collect(Collectors.toList())
+            );
+        }
+
+        int dif;
+        for (int i = 0; i < columnNames.size(); ++i){
+            res.append(columnNames.get(i));
+            dif = columnSizes[i] - columnNames.get(i).length();
+
+            for (int k = 0; k < (dif > 0 ? dif : dif * (-1)); ++k)
+                res.append(" ");
+
+            if (dif < 0)
+                columnSizes[i] += dif * (-1);
+
+            res.append("|");
+        }
+
+        return res.toString();
     }
 }

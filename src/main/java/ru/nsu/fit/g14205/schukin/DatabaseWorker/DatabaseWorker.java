@@ -502,7 +502,6 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
     public ResultSet workerExecuteQuery(String query) throws SQLException {
         Statement statement = connection.createStatement();
-
         return statement.executeQuery(query);
     }
 

@@ -27,4 +27,6 @@ public interface OClientModelInterface {
     List<String> getTableColumnsName(String tableName);
 
     List<List<String>> getTableRows(String tableName);
+
+    List<Object> executeQeury(String query);
 }
