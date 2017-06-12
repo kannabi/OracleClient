@@ -1,21 +1,15 @@
 package ru.nsu.fit.g14205.schukin.View;
 
+import oracle.jdbc.internal.OracleTypeMetaData;
 import ru.nsu.fit.g14205.schukin.Model.OClientModelInterface;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
-import ru.nsu.fit.g14205.schukin.Utils.RequiresEDT;
+import ru.nsu.fit.g14205.schukin.View.Utils.RequiresEDT;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
-import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,17 +43,33 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JButton refreshButton;
     private JPanel configurationPanel;
     private JTable configurationTable;
+    private JTable foreignKeysTable;
 
     private DefaultListModel<String> tableListModel;
     private TableModel tableDataTableModel;
-    private List<String> configurationColumnNames = new LinkedList<>(Arrays.asList("Column name",
-                                                                "Column type",
-                                                                "Default value",
-                                                                "Primary key",
-                                                                "Not null",
-                                                                "Foreign key(to table)",
-                                                                "Foreign key (to column)",
-                                                                " "));
+//    private List<String> configurationColumnNames = new LinkedList<>(Arrays.asList("Column name",
+//                                                                "Column type",
+//                                                                "Default value",
+//                                                                "Primary key",
+//                                                                "Not null",
+//                                                                "Foreign key(to table)",
+//                                                                "Foreign key (to column)",
+//                                                                " "));
+    private List<String> configurationColumnNames = new LinkedList<>(Arrays.asList(
+        "Column name",
+        "Column type",
+        "Default value",
+        "Primary key",
+        "Not null",
+        " "));
+
+    private List<String> foreignKeyColumnsName = new LinkedList<>(Arrays.asList(
+            "Column name",
+            "Key name",
+            "Foreign key(to table)",
+            "Foreign key (to column)",
+            " "));
+
 
     public OClientView() {
     }
@@ -147,6 +157,15 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 }
             }
         };
+
+        foreignKeysTable = new JTable(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column){
+                super.setValueAt(aValue, row, column);
+            }
+        };
     }
 
     /*
@@ -179,12 +198,20 @@ public class OClientView extends JFrame implements OClientViewInterface {
         new Thread(() ->{
             List<Vector> res = castToList(model.getTableColumnsName(tableName), model.getTableRows(tableName));
             repaintTable(res.get(0), res.get(1), dataTable);
+
             res = castToList(configurationColumnNames, new LinkedList<>());
-            Vector<Vector<Object>> v = new Vector<>();
-            v.add(new Vector<>(Arrays.asList(" ", " ", " ", true, true, " ", " ", "Delete")));
+
+            Vector<Vector<Object>> v = new Vector<>(model.getTableMetaData().stream().
+                    map(o -> {
+                        ArrayList<Object> r = new ArrayList<>(o);
+                        r.add("Delete");
+                        return new Vector<>(r);
+                    })
+                    .collect(Collectors.toList()));
+
             repaintTable(res.get(0), v, configurationTable);
 
-            Action delete = new AbstractAction()
+            Action deleteField = new AbstractAction()
             {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -194,7 +221,29 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 }
             };
 
-            ButtonColumn buttonColumn = new ButtonColumn(configurationTable, delete, 7);
+            ButtonColumn buttonColumnConfig = new ButtonColumn(configurationTable, deleteField, 5);
+
+            res = castToList(foreignKeyColumnsName, new LinkedList<>());
+            v = new Vector<>(model.getTableForeignKeys().stream().
+                    map(o -> {
+                        ArrayList<Object> r = new ArrayList<>(o);
+                        r.add("Delete");
+                        return new Vector<>(r);
+                    })
+                    .collect(Collectors.toList()));
+            repaintTable(res.get(0), v, foreignKeysTable);
+
+            Action deleteForeignKey = new AbstractAction()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    JTable table = (JTable)e.getSource();
+                    int modelRow = Integer.valueOf(e.getActionCommand());
+                    ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+                }
+            };
+
+            ButtonColumn buttonForeignKey = new ButtonColumn(foreignKeysTable, deleteForeignKey, 4);
         }).start();
     }
 

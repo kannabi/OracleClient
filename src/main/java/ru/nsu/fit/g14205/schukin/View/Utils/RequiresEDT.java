@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14205.schukin.Utils;
+package ru.nsu.fit.g14205.schukin.View.Utils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

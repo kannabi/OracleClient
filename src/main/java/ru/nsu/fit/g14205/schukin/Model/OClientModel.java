@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.schukin.Model;
 
+import jdk.nashorn.internal.codegen.ObjectClassGenerator;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorkerInterface;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableColumn;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableRow;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -99,18 +101,10 @@ public class OClientModel implements OClientModelInterface {
             List<String> row;
             while (resultSet.next()) {
                 row = new LinkedList<>();
-
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if (resultSet.getObject(i) == null) {
-                        row.add(null);
-                    } else {
-                        row.add(resultSet.getObject(i).toString());
-                    }
-                }
-
+                for (int i = 1; i <= metaData.getColumnCount(); i++)
+                    row.add(resultSet.getObject(i) == null ? null : resultSet.getObject(i).toString());
                 rows.add(row);
             }
-
             res.add(rows);
 
             return res;
@@ -157,5 +151,40 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
             return e.getMessage();
         }
+    }
+
+    public List<List<Object>> getTableMetaData(){
+        List<MyTableColumn> columns = currentTable.getColumns();
+        List<List<Object>> metaData = new LinkedList<>();
+        List<Object> columnMetaData;
+        for (MyTableColumn column : columns){
+            columnMetaData = new LinkedList<>();
+            columnMetaData.add(column.getName());
+            columnMetaData.add(column.getType());
+            columnMetaData.add(column.getDefaultValue());
+            columnMetaData.add(column.getIsPrimaryKey());
+            columnMetaData.add(column.getIsNullable());
+            metaData.add(columnMetaData);
+        }
+        return metaData;
+    }
+
+    public List<List<Object>> getTableForeignKeys(){
+        List<MyTableColumn> columns = currentTable.getColumns();
+        List<List<Object>> foreignKeys = new LinkedList<>();
+        List<Object> columnKeys;
+
+        for (MyTableColumn column : columns){
+            columnKeys = new LinkedList<>();
+            if (column.getFkName() != null) {
+                columnKeys.add(column.getName());
+                columnKeys.add(column.getFkName());
+                columnKeys.add(column.getFkTable());
+                columnKeys.add(column.getFkColumn());
+                foreignKeys.add(columnKeys);
+            }
+        }
+
+        return foreignKeys;
     }
 }

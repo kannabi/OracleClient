@@ -35,4 +35,8 @@ public interface OClientModelInterface {
     String addRow(List<String> data);
 
     String updateRow(int index, List<String> oldData, List<String> newData);
+
+    List<List<Object>> getTableMetaData();
+
+    List<List<Object>> getTableForeignKeys();
 }
