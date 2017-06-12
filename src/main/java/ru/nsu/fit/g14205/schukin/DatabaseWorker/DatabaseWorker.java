@@ -208,14 +208,17 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         return updateString.toString();
     }
 
-    public void deleteTableRow(Table table, MyTableRow myTableRow) throws SQLException {
-        String deleteString = getDeleteString(table, myTableRow);
+//    public void deleteTableRow(Table table, MyTableRow myTableRow) throws SQLException {
+    public void deleteTableRow(Table table, int rowIndex) throws SQLException {
+//        String deleteString = getDeleteString(table, myTableRow);
+        String deleteString = getDeleteString(table, table.getRow(rowIndex));
         Statement statement = connection.createStatement();
         statement.executeUpdate(deleteString);
 
-        table.deleteRow(myTableRow);
+//        table.deleteRow(myTableRow);
     }
 
+//    private String getDeleteString(Table table, MyTableRow myTableRow) {
     private String getDeleteString(Table table, MyTableRow myTableRow) {
         StringBuilder deleteString = new StringBuilder();
         deleteString.append("DELETE FROM " + table.getName());

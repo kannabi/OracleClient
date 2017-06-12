@@ -36,6 +36,9 @@ public class Table {
         rows.add(row);
     }
 
+    public MyTableRow getRow(int index){
+        return rows.get(index);
+    }
     public String getColumnType(String columnName) {
         for (MyTableColumn column : columns) {
             if (column.getName().equals(columnName))

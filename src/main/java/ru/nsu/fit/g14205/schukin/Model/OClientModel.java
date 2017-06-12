@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.schukin.Model;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.DatabaseWorkerInterface;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableColumn;
 import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.MyTableRow;
+import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.Table;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
 
@@ -22,6 +23,8 @@ public class OClientModel implements OClientModelInterface {
     OClientPresenterInterface presenter;
     OClientViewInterface view;
     DatabaseWorkerInterface worker;
+
+    Table currentTable = new Table("NULL");
 
     public OClientModel() {}
 
@@ -57,8 +60,9 @@ public class OClientModel implements OClientModelInterface {
 
     public List<String> getTableColumnsName(String tableName){
         try {
+            currentTable = worker.getTable(tableName);
 //            worker.getTable(tableName).getColumns().forEach(o -> resColumns.add(o.getName()));
-            return worker.getTable(tableName).getColumns().stream().
+            return currentTable.getColumns().stream().
                             map(MyTableColumn::getName).collect(Collectors.toList());
         } catch (SQLException e){
             e.printStackTrace();
@@ -117,31 +121,26 @@ public class OClientModel implements OClientModelInterface {
         }
     }
 
-    private String convertTableToString(List<String> columnNames, List<List<String>> rows){
-        StringBuffer res = new StringBuffer();
-        int [] columnSizes = new int[columnNames.size()];
-
-        for (int i = 0; i < columnNames.size(); ++i){
-            int finalI = i;
-            columnSizes[i] = Collections.max(
-                    rows.parallelStream().map(o -> o.get(finalI).length()).collect(Collectors.toList())
-            );
+    public String deleteRow(int rowIndex){
+        try {
+            worker.deleteTableRow(currentTable, rowIndex);
+            return "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
+    }
 
-        int dif;
-        for (int i = 0; i < columnNames.size(); ++i){
-            res.append(columnNames.get(i));
-            dif = columnSizes[i] - columnNames.get(i).length();
+    public String addRow(List<String> data){
+        MyTableRow row = new MyTableRow();
+        data.forEach(row::addValue);
 
-            for (int k = 0; k < (dif > 0 ? dif : dif * (-1)); ++k)
-                res.append(" ");
-
-            if (dif < 0)
-                columnSizes[i] += dif * (-1);
-
-            res.append("|");
+        try {
+            worker.addTableRow(currentTable, row);
+            return "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
-
-        return res.toString();
     }
 }

@@ -29,4 +29,8 @@ public interface OClientModelInterface {
     List<List<String>> getTableRows(String tableName);
 
     List<Object> executeQeury(String query);
+
+    String deleteRow(int rowIndex);
+
+    String addRow(List<String> data);
 }

@@ -19,6 +19,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private OClientPresenterInterface presenter;
     private volatile OClientModelInterface model;
 
+    private final int NO_ONE_ROW_SELECTED = -1;
+
     private JTabbedPane tabbedPane1;
     private JList<String> tableNameList;
     private JTabbedPane tabbedPane2;
@@ -31,6 +33,10 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JTextArea queryResultTextArea;
     private JTabbedPane tabbedPane3;
     private JTable queryResultTable;
+    private JButton dropTableButton;
+    private JButton deleteRowButton;
+    private JButton addRowButton;
+    private JButton refreshButton;
 
     DefaultListModel<String> tableListModel;
     TableModel tableDataTableModel;
@@ -86,7 +92,6 @@ public class OClientView extends JFrame implements OClientViewInterface {
         List<String> tableNames = model.getTablesName();
         for (String n : tableNames) {
             tableListModel.addElement(n);
-            System.out.println(n);
         }
 
         tableNameList.getSelectionModel().
@@ -97,6 +102,13 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 loadTableOnDataPane(tableNameList.getSelectedValue());
             }
         });
+
+        deleteRowButton.addActionListener((e) -> deleteSelectedRow(dataTable.getSelectedRow()));
+
+        refreshButton.addActionListener((e) -> refreshDataTable());
+
+        addRowButton.addActionListener((e) ->
+                new AddingRowWindow(model.getTableColumnsName(tableNameList.getSelectedValue()), model, this));
     }
 
     private void loadTableOnDataPane(String tableName){
@@ -106,6 +118,15 @@ public class OClientView extends JFrame implements OClientViewInterface {
         }).start();
     }
 
+    private void deleteSelectedRow(int index){
+        System.out.println(index);
+        if (index != NO_ONE_ROW_SELECTED){
+//            new Thread(()->{
+                model.deleteRow(index);
+                loadTableOnDataPane(tableNameList.getSelectedValue());
+//            });
+        }
+    }
     /*
     * Конец секции для tableview таба
     * */
@@ -120,12 +141,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 List<Object> res = model.executeQeury(queryTextArea.getText());
 
                 setQueryResultText((String)res.get(0));
-                if (res.size() == 3){
+                if (res.size() > 1){
                     List<Vector> data = castToList((List<String>)res.get(1), (List<List<String>>) res.get(2));
-//                    repaintTable(new Vector((List<Object>)res.get(1)),
-//                                    new Vector((List<List<String>>) res.get(2)),
-//                                    queryResultTable);
-//                    System.out.println(data.get(0));
                     repaintTable(data.get(0),
                                     data.get(1),
                                     queryResultTable);
@@ -163,5 +180,9 @@ public class OClientView extends JFrame implements OClientViewInterface {
         System.out.println(columns);
         table.setModel(new DefaultTableModel(data, columns));
         table.repaint();
+    }
+
+    void refreshDataTable(){
+        loadTableOnDataPane(tableNameList.getSelectedValue());
     }
 }
