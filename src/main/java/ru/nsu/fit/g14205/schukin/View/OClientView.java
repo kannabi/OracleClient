@@ -44,6 +44,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JPanel configurationPanel;
     private JTable configurationTable;
     private JTable foreignKeysTable;
+    private JButton addForeignKeyButton;
+    private JButton addFieldButton;
 
     private DefaultListModel<String> tableListModel;
     private TableModel tableDataTableModel;
@@ -192,6 +194,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
 
         addRowButton.addActionListener((e) ->
                 new AddingRowWindow(model.getTableColumnsName(tableNameList.getSelectedValue()), model, this));
+
+        addFieldButton.addActionListener((e) -> new AddingField(model, this));
     }
 
     private void loadTableOnDataPane(String tableName){
@@ -215,9 +219,13 @@ public class OClientView extends JFrame implements OClientViewInterface {
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    JTable table = (JTable)e.getSource();
-                    int modelRow = Integer.valueOf(e.getActionCommand());
-                    ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+                    new Thread(() ->{
+                        JTable table = (JTable)e.getSource();
+                        int modelRow = Integer.valueOf(e.getActionCommand());
+                        model.deleteField((String) table.getModel().getValueAt(modelRow, 0));
+//                        ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+                        refreshDataTable();
+                    }).start();
                 }
             };
 
@@ -250,10 +258,10 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private void deleteSelectedRow(int index){
         System.out.println(index);
         if (index != NO_ONE_ROW_SELECTED){
-//            new Thread(()->{
+            new Thread(()->{
                 model.deleteRow(index);
                 loadTableOnDataPane(tableNameList.getSelectedValue());
-//            });
+            }).start();
         }
     }
 
@@ -307,9 +315,6 @@ public class OClientView extends JFrame implements OClientViewInterface {
 
     @RequiresEDT
     private void repaintTable(Vector<Object> columns, Vector<Vector<Object>> data, JTable table){
-//        System.out.println(columns);
-//        System.out.println(data);
-//        System.out.println();
         table.setModel(new DefaultTableModel(data, columns));
         table.repaint();
     }

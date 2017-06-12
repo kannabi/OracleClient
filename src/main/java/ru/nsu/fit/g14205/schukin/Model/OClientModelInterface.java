@@ -39,4 +39,8 @@ public interface OClientModelInterface {
     List<List<Object>> getTableMetaData();
 
     List<List<Object>> getTableForeignKeys();
+
+    String deleteField(String name);
+
+    String addField(String name, String type);
 }

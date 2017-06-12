@@ -179,8 +179,8 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         StringBuilder updateString = new StringBuilder();
         updateString.append("UPDATE " + table.getName() + " SET ");
 
-        for (int i = 0; i < oldTableRow.getDataSize() - 1; i++) {
-            if (oldTableRow.getNewValue(i) == null) {
+        for (int i = 0; i < newTableRow.getDataSize() - 1; i++) {
+            if (newTableRow.getNewValue(i) == null) {
                 updateString.append(table.getColumnName(i) + " = NULL, ");
             } else {
                 updateString.append(table.getColumnName(i) + " = '" + newTableRow.getNewValue(i) + "', ");
@@ -190,14 +190,23 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
         updateString.append("WHERE ");
         for (int i = 0; i < oldTableRow.getDataSize() - 1; i++) {
-            if (oldTableRow.getValue(i) == null) {
-                updateString.append(table.getColumnName(i) + " = NULL, ");
-            } else {
-                updateString.append(table.getColumnName(i) + " = '" + oldTableRow.getValue(i) + "' AND ");
-            }
+//            if (oldTableRow.getValue(i) == null) {
+//                updateString.append(table.getColumnName(i) + " = NULL, ");
+//            } else {
+//                updateString.append(table.getColumnName(i) + " = '" + oldTableRow.getValue(i) + "'");
+//            }
+            String and = "";
+            if (oldTableRow.getValue(i) != null)
+                and =  i > 0 ? "AND " : "";
+                updateString.append(and + table.getColumnName(i) + " = '" + oldTableRow.getValue(i) + "' ");
         }
 
-        updateString.append(table.getColumnName(oldTableRow.getDataSize() - 1) + " = '" + oldTableRow.getValue(oldTableRow.getDataSize() - 1) + "' ");
+        if (oldTableRow.getValue(oldTableRow.getDataSize() - 1) != null){
+            updateString.append(" AND ");
+            updateString.append(table.getColumnName(oldTableRow.getDataSize() - 1) + " = '" + oldTableRow.getValue(oldTableRow.getDataSize() - 1) + "' ");
+        }
+//        else
+//            updateString.append(table.getColumnName(oldTableRow.getDataSize() - 1) + " = " + "NULL" + " ");
 
         return updateString.toString();
     }

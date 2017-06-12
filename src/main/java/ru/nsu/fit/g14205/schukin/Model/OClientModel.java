@@ -187,4 +187,24 @@ public class OClientModel implements OClientModelInterface {
 
         return foreignKeys;
     }
+
+    public String deleteField(String name){
+        try {
+            worker.dropColumn(currentTable, name);
+            return "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public String addField(String name, String type){
+        try {
+            worker.addNewColumn(currentTable, name, type);
+            return "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
 }
