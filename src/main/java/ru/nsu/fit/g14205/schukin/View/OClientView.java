@@ -5,9 +5,14 @@ import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.Utils.RequiresEDT;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +42,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JButton deleteRowButton;
     private JButton addRowButton;
     private JButton refreshButton;
+    private JButton applyChangesButton;
 
     DefaultListModel<String> tableListModel;
     TableModel tableDataTableModel;
@@ -76,11 +82,28 @@ public class OClientView extends JFrame implements OClientViewInterface {
         tableListModel = new DefaultListModel<>();
         tableNameList = new JList<>(tableListModel);
 
-        dataTable = new JTable(){
+        dataTable = new JTable()
+        {
             private static final long serialVersionUID = 1L;
 
-            public boolean isCellEditable(int row, int column) {
-                return false;
+//            public boolean isCellEditable(int row, int column) {
+//                return false;
+//            }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column){
+                List<String> oldData = new ArrayList<>();
+                for (int i = 0; i < dataTable.getColumnCount(); ++i){
+                    oldData.add((String) dataTable.getValueAt(row, i));
+                }
+                super.setValueAt(aValue, row, column);
+                List<String> newData = new ArrayList<>();
+                for (int i = 0; i < dataTable.getColumnCount(); ++i){
+                    newData.add((String) dataTable.getValueAt(row, i));
+                }
+                System.out.println(newData);
+                model.updateRow(dataTable.getSelectedRow(),oldData, newData);
+                refreshDataTable();
             }
         };
     }
@@ -127,6 +150,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
 //            });
         }
     }
+
+
     /*
     * Конец секции для tableview таба
     * */

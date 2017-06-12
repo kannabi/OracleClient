@@ -143,4 +143,19 @@ public class OClientModel implements OClientModelInterface {
             return e.getMessage();
         }
     }
+
+    public String updateRow(int index, List<String> oldData, List<String> newData){
+        MyTableRow oldRow = new MyTableRow();
+        oldData.forEach(oldRow::addValue);
+        MyTableRow newRow = new MyTableRow();
+                newData.forEach(newRow::addValue);
+
+        try {
+            worker.updateTableRow(currentTable, oldRow, newRow);
+            return "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
 }

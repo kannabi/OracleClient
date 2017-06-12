@@ -31,7 +31,7 @@ public interface DatabaseWorkerInterface {
 
     void initTable(Table table) throws SQLException;
 
-    void updateTableRow(Table table, MyTableRow myTableRow) throws SQLException;
+    void updateTableRow(Table table, MyTableRow oldTableRow, MyTableRow newTableRow) throws SQLException;
 
 //    void deleteTableRow(Table table, MyTableRow myTableRow) throws SQLException;
     void deleteTableRow(Table table, int rowIndex) throws SQLException;

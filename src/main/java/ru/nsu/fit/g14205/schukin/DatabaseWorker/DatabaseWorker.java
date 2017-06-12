@@ -167,43 +167,37 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
     }
 
-    public void updateTableRow(Table table, MyTableRow myTableRow) throws SQLException {
-        String updateString = getUpdateString(table, myTableRow);
+    public void updateTableRow(Table table, MyTableRow oldTableRow, MyTableRow newTableRow) throws SQLException {
+        String updateString = getUpdateString(table, oldTableRow, newTableRow);
 
         Statement statement = connection.createStatement();
+        System.out.println(updateString);
         statement.executeUpdate(updateString);
-        myTableRow.commitNewData();
     }
 
-    private String getUpdateString(Table table, MyTableRow myTableRow) {
+    private String getUpdateString(Table table, MyTableRow oldTableRow, MyTableRow newTableRow) {
         StringBuilder updateString = new StringBuilder();
         updateString.append("UPDATE " + table.getName() + " SET ");
 
-        for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-//            if (myTableRow.getNewValue(i).get() == null) {
-            if (myTableRow.getNewValue(i) == null) {
+        for (int i = 0; i < oldTableRow.getDataSize() - 1; i++) {
+            if (oldTableRow.getNewValue(i) == null) {
                 updateString.append(table.getColumnName(i) + " = NULL, ");
             } else {
-//                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getNewValue(i).get() + "', ");
-                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getNewValue(i) + "', ");
+                updateString.append(table.getColumnName(i) + " = '" + newTableRow.getNewValue(i) + "', ");
             }
         }
-//        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getNewValue(myTableRow.getDataSize() - 1).get() + "' ");
-        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getNewValue(myTableRow.getDataSize() - 1) + "' ");
+        updateString.append(table.getColumnName(newTableRow.getDataSize() - 1) + " = '" + newTableRow.getNewValue(oldTableRow.getDataSize() - 1) + "' ");
 
         updateString.append("WHERE ");
-        for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-//            if (myTableRow.getValue(i).get() == null) {
-            if (myTableRow.getValue(i) == null) {
+        for (int i = 0; i < oldTableRow.getDataSize() - 1; i++) {
+            if (oldTableRow.getValue(i) == null) {
                 updateString.append(table.getColumnName(i) + " = NULL, ");
             } else {
-//                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
-                updateString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i) + "' AND ");
+                updateString.append(table.getColumnName(i) + " = '" + oldTableRow.getValue(i) + "' AND ");
             }
         }
 
-//        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
-        updateString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "' ");
+        updateString.append(table.getColumnName(oldTableRow.getDataSize() - 1) + " = '" + oldTableRow.getValue(oldTableRow.getDataSize() - 1) + "' ");
 
         return updateString.toString();
     }

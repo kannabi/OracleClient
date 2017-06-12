@@ -33,4 +33,6 @@ public interface OClientModelInterface {
     String deleteRow(int rowIndex);
 
     String addRow(List<String> data);
+
+    String updateRow(int index, List<String> oldData, List<String> newData);
 }
