@@ -248,4 +248,16 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
         }
     }
+
+    public void deleteForeignKey(String name){
+        currentTable.getColumn(name).clearForeignKey();
+    }
+
+    public void addForeignKey(String name, String fkTable, String fkColumn, String fkName){
+        try {
+            worker.setForeignKey(currentTable, currentTable.getColumn(name), fkTable, fkColumn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

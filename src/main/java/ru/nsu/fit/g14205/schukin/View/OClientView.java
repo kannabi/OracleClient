@@ -153,8 +153,6 @@ public class OClientView extends JFrame implements OClientViewInterface {
                         return Boolean.class;
                     case 4:
                         return Boolean.class;
-//                    case 7:
-//                        return JButton.class;
                     default:
                         return String.class;
                 }
@@ -231,6 +229,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 new AddingRowWindow(model.getTableColumnsName(tableNameList.getSelectedValue()), model, this));
 
         addFieldButton.addActionListener((e) -> new AddingField(model, this));
+
+        addForeignKeyButton.addActionListener((e) -> new AddingForeignKeyWindow(model, this));
     }
 
     private void loadTableOnDataPane(String tableName){
@@ -282,6 +282,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 {
                     JTable table = (JTable)e.getSource();
                     int modelRow = Integer.valueOf(e.getActionCommand());
+                    model.deleteForeignKey((String) table.getValueAt(modelRow, 0));
                     ((DefaultTableModel)table.getModel()).removeRow(modelRow);
                 }
             };

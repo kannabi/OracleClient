@@ -64,7 +64,8 @@ public interface DatabaseWorkerInterface {
 
     void updateForeignKeys(Table table, List<Pair<String, String>> foreignKeys) throws SQLException;
 
-    void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException;
+//    void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException;
+    void setForeignKey(Table table, MyTableColumn column, String fkTable, String fkColumn) throws SQLException;
 
     void dropForeignKey(Table table, MyTableColumn column) throws SQLException;
 

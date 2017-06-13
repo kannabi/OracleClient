@@ -82,10 +82,6 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         tablesObserver.onNext(tablesNames);
     }
 
-//    public ObservableList<StringProperty> getTablesNames() throws SQLException {
-//        return tablesNames;
-//    }
-
     public List<String> getTablesNames() throws SQLException {
         return tablesNames;
     }
@@ -215,6 +211,7 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
     public void deleteTableRow(Table table, int rowIndex) throws SQLException {
 //        String deleteString = getDeleteString(table, myTableRow);
         String deleteString = getDeleteString(table, table.getRow(rowIndex));
+        System.out.println(deleteString);
         Statement statement = connection.createStatement();
         statement.executeUpdate(deleteString);
 
@@ -227,18 +224,21 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         deleteString.append("DELETE FROM " + table.getName());
 
         deleteString.append(" WHERE ");
+        String and = "";
         for (int i = 0; i < myTableRow.getDataSize() - 1; i++) {
-//            if (myTableRow.getValue(i).get() == null) {
+            and = i > 0 ? "AND " : "";
             if (myTableRow.getValue(i) == null) {
-                deleteString.append(table.getColumnName(i) + " = NULL, ");
+//                deleteString.append(and + table.getColumnName(i) + " = NULL, ");
             } else {
-//                deleteString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i).get() + "' AND ");
-                deleteString.append(table.getColumnName(i) + " = '" + myTableRow.getValue(i) + "' AND ");
+
+                deleteString.append(and + table.getColumnName(i) + " = '" + myTableRow.getValue(i) + "' ");
             }
         }
 
-//        deleteString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1).get() + "' ");
-        deleteString.append(table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "' ");
+        if (myTableRow.getValue(myTableRow.getDataSize() - 1) == null) {
+//            deleteString.append("AND " + table.getColumnName(myTableRow.getDataSize() - 1) + " = " + "NULL" + " ");
+        }else
+            deleteString.append("AND " + table.getColumnName(myTableRow.getDataSize() - 1) + " = '" + myTableRow.getValue(myTableRow.getDataSize() - 1) + "' ");
 
         return deleteString.toString();
     }
@@ -451,18 +451,19 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
             Pair<String, String> pair = foreignKeys.get(i);
             MyTableColumn column = table.getColumns().get(i);
 
-            if (!pair.getKey().equals(column.getFkTable()) || !pair.getValue().equals(column.getFkColumn()))
-                setForeignKey(table, column, pair);
+            if (!pair.getKey().equals(column.getFkTable()) || !pair.getValue().equals(column.getFkColumn())){}
+//                setForeignKey(table, column, pair);
         }
     }
 
 
     //TODO: убрать fx в методе setForeignKey
-    public void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException {
-        if (foreignKey.getKey().equals("") && foreignKey.getValue().equals("") && column.getFkColumn() == null && column.getFkTable() == null)
+//    public void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException {
+    public void setForeignKey(Table table, MyTableColumn column, String fkTable, String fkColumn) throws SQLException {
+        if (fkTable.equals("") && fkColumn.equals("") && column.getFkColumn() == null && column.getFkTable() == null)
             return;
 
-        if (foreignKey.getKey().equals("") && foreignKey.getValue().equals("") && column.getFkColumn() != null && column.getFkTable() != null) {
+        if (fkTable.equals("") && fkColumn.equals("") && column.getFkColumn() != null && column.getFkTable() != null) {
             dropForeignKey(table, column);
             return;
         }
@@ -471,13 +472,14 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
 
         String fkName = table.getName() + "_" + column.getName() + "_fk";
         String query = "ALTER TABLE " + table.getName() + " ADD CONSTRAINT " + fkName + " FOREIGN KEY (" + column.getName()
-                + ") REFERENCES " + foreignKey.getKey() + "( " + foreignKey.getValue() + " )";
+                + ") REFERENCES " + fkTable + "( " + fkColumn + " )";
 
 
         Statement statement = connection.createStatement();
+        System.out.println(query);
         statement.execute(query);
 
-        table.setColumnFk(column.getName(), foreignKey.getKey(), foreignKey.getValue(), fkName);
+        table.setColumnFk(column.getName(), fkTable, fkColumn, fkName);
     }
 
 
@@ -507,6 +509,7 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
     }
 
     public ResultSet workerExecuteQuery(String query) throws SQLException {
+
         Statement statement = connection.createStatement();
         return statement.executeQuery(query);
     }

@@ -59,6 +59,14 @@ public class Table {
         return -1;
     }
 
+    public MyTableColumn getColumn(String name){
+        for (MyTableColumn column : columns)
+            if (column.getName().equals(name))
+                return column;
+
+        return null;
+    }
+
     public String getColumnName(int index) {
         return columns.get(index).getName();
     }

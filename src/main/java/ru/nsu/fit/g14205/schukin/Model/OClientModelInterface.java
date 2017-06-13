@@ -53,4 +53,8 @@ public interface OClientModelInterface {
     void updateColumnType(String columnName, String newType);
 
     void renameColumn (String oldName, String newName);
+
+    void deleteForeignKey(String name);
+
+    void addForeignKey(String name, String fkTable, String fkColumn, String fkName);
 }
