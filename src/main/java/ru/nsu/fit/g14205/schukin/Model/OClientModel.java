@@ -224,4 +224,12 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
         }
     }
+
+    public void updateDefaulValues(List<String> values){
+        try {
+            worker.updateDefault(currentTable, values);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

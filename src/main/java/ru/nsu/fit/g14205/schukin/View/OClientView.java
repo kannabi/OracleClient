@@ -175,6 +175,14 @@ public class OClientView extends JFrame implements OClientViewInterface {
                                     pks.add((String)this.getValueAt(i, 0));
                             System.out.println(pks);
                             model.updatePrimaryKeys(pks);
+                            break;
+                        } case 2: {
+                            List<String> values = new LinkedList<>();
+                            for (int i = 0; i < this.getRowCount(); ++i)
+                                values.add((String)this.getValueAt(i, 2));
+                            System.out.println(values);
+                            model.updateDefaulValues(values);
+                            break;
                         }
                     }
                     refreshDataTable();

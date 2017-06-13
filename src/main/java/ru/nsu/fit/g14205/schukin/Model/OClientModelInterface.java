@@ -47,4 +47,6 @@ public interface OClientModelInterface {
     void setNotNull(String columnName, boolean state);
 
     void updatePrimaryKeys(List<String> pks);
+
+    void updateDefaulValues(List<String> values);
 }
