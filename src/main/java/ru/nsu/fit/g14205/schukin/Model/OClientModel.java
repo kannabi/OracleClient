@@ -216,4 +216,12 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
         }
     }
+
+    public void updatePrimaryKeys(List<String> pks){
+        try {
+            worker.updatePrimaryKeys(currentTable, pks);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

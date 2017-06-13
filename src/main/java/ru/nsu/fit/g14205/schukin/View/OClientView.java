@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.schukin.View;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import oracle.jdbc.internal.OracleTypeMetaData;
 import ru.nsu.fit.g14205.schukin.Model.OClientModelInterface;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
@@ -162,10 +163,22 @@ public class OClientView extends JFrame implements OClientViewInterface {
             @Override
             public void setValueAt(Object aValue, int row, int column){
                 super.setValueAt(aValue, row, column);
-                switch (column){
-                    case 4:
-                        model.setNotNull((String) this.getValueAt(row, 0), (Boolean) aValue);
-                }
+                new Thread(() ->{
+                    switch (column){
+                        case 4: {
+                            model.setNotNull((String) this.getValueAt(row, 0), (Boolean) aValue);
+                            break;
+                        } case 3: {
+                            List<String> pks = new LinkedList<>();
+                            for (int i = 0; i < this.getRowCount(); ++i)
+                                if ((Boolean) this.getValueAt(i, column))
+                                    pks.add((String)this.getValueAt(i, 0));
+                            System.out.println(pks);
+                            model.updatePrimaryKeys(pks);
+                        }
+                    }
+                    refreshDataTable();
+                }).start();
             }
         };
 

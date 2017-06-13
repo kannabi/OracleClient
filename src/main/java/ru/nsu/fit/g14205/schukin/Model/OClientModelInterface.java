@@ -45,4 +45,6 @@ public interface OClientModelInterface {
     String addField(String name, String type);
 
     void setNotNull(String columnName, boolean state);
+
+    void updatePrimaryKeys(List<String> pks);
 }
