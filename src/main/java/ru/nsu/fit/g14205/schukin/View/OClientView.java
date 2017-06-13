@@ -162,6 +162,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
 
             @Override
             public void setValueAt(Object aValue, int row, int column){
+                if (column == 0)
+                    model.renameColumn((String) this.getValueAt(row, 0), (String) aValue);
                 super.setValueAt(aValue, row, column);
                 new Thread(() ->{
                     switch (column){
@@ -183,8 +185,9 @@ public class OClientView extends JFrame implements OClientViewInterface {
                             System.out.println(values);
                             model.updateDefaulValues(values);
                             break;
-                        } case 1:{
-                            model.updateColumnType((String)this.getValueAt(row, 0), (String)this.getValueAt(row, 1));
+                        } case 1: {
+                            model.updateColumnType((String) this.getValueAt(row, 0), (String) this.getValueAt(row, 1));
+                            break;
                         }
                     }
                     refreshDataTable();

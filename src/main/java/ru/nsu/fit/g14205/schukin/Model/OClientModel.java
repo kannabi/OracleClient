@@ -240,4 +240,12 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
         }
     }
+
+    public void renameColumn (String oldName, String newName){
+        try {
+            worker.renameColumn(currentTable, oldName, newName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

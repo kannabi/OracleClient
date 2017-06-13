@@ -51,4 +51,6 @@ public interface OClientModelInterface {
     void updateDefaulValues(List<String> values);
 
     void updateColumnType(String columnName, String newType);
+
+    void renameColumn (String oldName, String newName);
 }
