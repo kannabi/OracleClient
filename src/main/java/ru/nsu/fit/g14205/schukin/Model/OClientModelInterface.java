@@ -43,4 +43,6 @@ public interface OClientModelInterface {
     String deleteField(String name);
 
     String addField(String name, String type);
+
+    void setNotNull(String columnName, boolean state);
 }

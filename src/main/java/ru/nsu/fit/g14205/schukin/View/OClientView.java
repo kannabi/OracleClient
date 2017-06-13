@@ -158,6 +158,15 @@ public class OClientView extends JFrame implements OClientViewInterface {
                         return String.class;
                 }
             }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column){
+                super.setValueAt(aValue, row, column);
+                switch (column){
+                    case 4:
+                        model.setNotNull((String) this.getValueAt(row, 0), (Boolean) aValue);
+                }
+            }
         };
 
         foreignKeysTable = new JTable(){

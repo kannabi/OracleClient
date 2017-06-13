@@ -108,8 +108,6 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         setData(table);
         initPrimaryKeys(table);
         initForeignKeys(table);
-
-
     }
 
     private void initColumns(Table table) throws SQLException {
@@ -128,9 +126,11 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
                 defaultValue = "NULL";
             }
 
-            boolean isNullable = false;
+//            boolean isNullable = false;
+            boolean isNullable = true;
             if (resultSet.getString(18).equals("YES"))
-                isNullable = true;
+//                isNullable = true;
+                isNullable = false;
 
             if (!resultSet.getString(6).equals("VARCHAR2")) {
                 defaultValue = defaultValue.replace("'", "");

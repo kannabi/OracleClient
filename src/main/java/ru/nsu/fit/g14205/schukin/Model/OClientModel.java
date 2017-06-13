@@ -64,6 +64,7 @@ public class OClientModel implements OClientModelInterface {
         try {
             currentTable = worker.getTable(tableName);
 //            worker.getTable(tableName).getColumns().forEach(o -> resColumns.add(o.getName()));
+            worker.getTable(tableName).getColumns().forEach(o -> System.out.println(o.getIsNullable()));
             return currentTable.getColumns().stream().
                             map(MyTableColumn::getName).collect(Collectors.toList());
         } catch (SQLException e){
@@ -205,6 +206,14 @@ public class OClientModel implements OClientModelInterface {
         } catch (SQLException e) {
             e.printStackTrace();
             return e.getMessage();
+        }
+    }
+
+    public void setNotNull(String columnName, boolean state){
+        try {
+            worker.setNotNull(currentTable, columnName, state);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
