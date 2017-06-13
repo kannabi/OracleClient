@@ -232,4 +232,12 @@ public class OClientModel implements OClientModelInterface {
             e.printStackTrace();
         }
     }
+
+    public void updateColumnType(String columnName, String newType){
+        try {
+            worker.changeColumnType(currentTable, columnName, newType);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

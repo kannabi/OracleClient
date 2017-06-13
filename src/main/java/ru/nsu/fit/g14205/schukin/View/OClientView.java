@@ -183,6 +183,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
                             System.out.println(values);
                             model.updateDefaulValues(values);
                             break;
+                        } case 1:{
+                            model.updateColumnType((String)this.getValueAt(row, 0), (String)this.getValueAt(row, 1));
                         }
                     }
                     refreshDataTable();

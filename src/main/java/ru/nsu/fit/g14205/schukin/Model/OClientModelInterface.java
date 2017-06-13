@@ -49,4 +49,6 @@ public interface OClientModelInterface {
     void updatePrimaryKeys(List<String> pks);
 
     void updateDefaulValues(List<String> values);
+
+    void updateColumnType(String columnName, String newType);
 }
