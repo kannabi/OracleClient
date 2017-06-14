@@ -8,6 +8,7 @@ import ru.nsu.fit.g14205.schukin.DatabaseWorker.Table.Table;
 import ru.nsu.fit.g14205.schukin.Presenter.OClientPresenterInterface;
 import ru.nsu.fit.g14205.schukin.View.OClientViewInterface;
 
+import javax.swing.event.ListDataEvent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -256,6 +257,48 @@ public class OClientModel implements OClientModelInterface {
     public void addForeignKey(String name, String fkTable, String fkColumn, String fkName){
         try {
             worker.setForeignKey(currentTable, currentTable.getColumn(name), fkTable, fkColumn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void dropTable(){
+        try {
+            worker.dropTable(currentTable);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createTable(String name, List<List<Object>> columns, List<List<String>> foreignKeys){
+        Table table = new Table(name);
+        List<String> primaryKeys = new ArrayList<>();
+
+        for (List<Object> column : columns){
+            table.addColumn((String) column.get(0),
+                    (Boolean) column.get(4),
+//                    (Boolean) column.get(3),
+                    false,
+                    (String) column.get(1),
+                    (String) column.get(2));
+
+            if ((Boolean) column.get(3)){
+                primaryKeys.add((String) column.get(0));
+            }
+        }
+
+        table.addColumnPkConstraint(primaryKeys, table.getName() + "_pk");
+
+        String fkName;
+        for(List<String> fks : foreignKeys){
+            fkName = fks.get(1).equals("") && fks.get(2).equals("") ? null : fks.get(3);
+
+
+            table.setColumnFk(fks.get(0), fks.get(1), fks.get(2), fkName);
+        }
+
+        try {
+            worker.createNewTable(table);
         } catch (SQLException e) {
             e.printStackTrace();
         }

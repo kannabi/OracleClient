@@ -57,4 +57,8 @@ public interface OClientModelInterface {
     void deleteForeignKey(String name);
 
     void addForeignKey(String name, String fkTable, String fkColumn, String fkName);
+
+    void dropTable();
+
+    void createTable(String name, List<List<Object>> columns, List<List<String>> foreignKeys);
 }

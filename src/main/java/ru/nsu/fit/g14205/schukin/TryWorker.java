@@ -35,12 +35,8 @@ public class TryWorker {
 //            e.printStackTrace();
 //        }
 
-        String msg = "msg";
-        Object m = "Kek";
-        List<String> list = new LinkedList<>();
-        Object l = new LinkedList<>();
-
-        System.out.println(m);
-        System.out.println(l);
+        Boolean b = true;
+        Object o = b;
+        System.out.println(o);
     }
 }

@@ -457,7 +457,6 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
     }
 
 
-    //TODO: убрать fx в методе setForeignKey
 //    public void setForeignKey(Table table, MyTableColumn column, Pair<String, String> foreignKey) throws SQLException {
     public void setForeignKey(Table table, MyTableColumn column, String fkTable, String fkColumn) throws SQLException {
         if (fkTable.equals("") && fkColumn.equals("") && column.getFkColumn() == null && column.getFkTable() == null)
@@ -520,13 +519,14 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
     }
 
     public void createNewTable(Table table) throws SQLException {
+        connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
         String query = getCreateTableString(table);
         System.out.println(query);
         statement.executeUpdate(query);
         connection.commit();
-
-//        tablesNames.add(new SimpleStringProperty(table.getName().toUpperCase()));
+        connection.setAutoCommit(false);
+        
         tablesNames.add(table.getName().toUpperCase());
     }
 

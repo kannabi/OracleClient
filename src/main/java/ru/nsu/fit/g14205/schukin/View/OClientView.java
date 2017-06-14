@@ -47,6 +47,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
     private JTable foreignKeysTable;
     private JButton addForeignKeyButton;
     private JButton addFieldButton;
+    private JButton refreshListButton;
+    private JButton createNewTableButton;
 
     private DefaultListModel<String> tableListModel;
     private TableModel tableDataTableModel;
@@ -66,7 +68,8 @@ public class OClientView extends JFrame implements OClientViewInterface {
         "Not null",
         " "));
 
-    private List<String> foreignKeyColumnsName = new LinkedList<>(Arrays.asList(
+    private List<String>
+            foreignKeyColumnsName = new LinkedList<>(Arrays.asList(
             "Column name",
             "Key name",
             "Foreign key(to table)",
@@ -137,7 +140,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 for (int i = 0; i < dataTable.getColumnCount(); ++i){
                     newData.add((String) dataTable.getValueAt(row, i));
                 }
-                System.out.println(newData);
+//                System.out.println(newData);
                 model.updateRow(dataTable.getSelectedRow(), oldData, newData);
                 refreshDataTable();
             }
@@ -207,10 +210,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
     * Секция с функция для tableview таба
     * */
     private void setUpTableViewTab(){
-        List<String> tableNames = model.getTablesName();
-        for (String n : tableNames) {
-            tableListModel.addElement(n);
-        }
+        refreshTableList();
 
         tableNameList.getSelectionModel().
                 setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -231,6 +231,17 @@ public class OClientView extends JFrame implements OClientViewInterface {
         addFieldButton.addActionListener((e) -> new AddingField(model, this));
 
         addForeignKeyButton.addActionListener((e) -> new AddingForeignKeyWindow(model, this));
+
+        refreshListButton.addActionListener((e) -> refreshTableList());
+
+        dropTableButton.addActionListener((e) -> {
+            model.dropTable();
+            refreshTableList();
+        });
+
+        createNewTableButton.addActionListener((e) ->{
+            new AddingNewTable(model, this);
+        });
     }
 
     private void loadTableOnDataPane(String tableName){
@@ -247,6 +258,9 @@ public class OClientView extends JFrame implements OClientViewInterface {
                         return new Vector<>(r);
                     })
                     .collect(Collectors.toList()));
+
+            System.out.println("META");
+            System.out.println(v);
 
             repaintTable(res.get(0), v, configurationTable);
 
@@ -274,6 +288,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
                         return new Vector<>(r);
                     })
                     .collect(Collectors.toList()));
+
             repaintTable(res.get(0), v, foreignKeysTable);
 
             Action deleteForeignKey = new AbstractAction()
@@ -299,6 +314,23 @@ public class OClientView extends JFrame implements OClientViewInterface {
                 loadTableOnDataPane(tableNameList.getSelectedValue());
             }).start();
         }
+    }
+
+
+    private void refreshTableList(){
+        new Thread(() -> {
+            List<String> tableNames = model.getTablesName();
+            tableListModel.clear();
+            for (String n : tableNames) {
+                tableListModel.addElement(n);
+            }
+            repaintTableList();
+        }).start();
+    }
+
+    @RequiresEDT
+    private void repaintTableList(){
+        tableNameList.repaint();
     }
 
     /*
@@ -351,6 +383,7 @@ public class OClientView extends JFrame implements OClientViewInterface {
 
     @RequiresEDT
     private void repaintTable(Vector<Object> columns, Vector<Vector<Object>> data, JTable table){
+        System.out.println(data);
         table.setModel(new DefaultTableModel(data, columns));
         table.repaint();
     }
