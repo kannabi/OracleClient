@@ -37,7 +37,7 @@ public class OClientModel implements OClientModelInterface {
 
     public void setDatabaseWorker(DatabaseWorkerInterface worker){
         this.worker = worker;
-        worker.login("localhost", "1251", "kannabii", "kan", "kannabii");
+//        worker.login("localhost", "1251", "kannabii", "kan", "kannabii");
     }
 
     public void setView(OClientViewInterface view){

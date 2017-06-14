@@ -13,4 +13,6 @@ public interface OClientPresenterInterface {
     void setView(OClientViewInterface view);
 
     void run();
+
+    void setLoginParams(String ip, String port, String login, String password);
 }

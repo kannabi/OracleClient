@@ -526,7 +526,7 @@ public class DatabaseWorker implements DatabaseWorkerInterface {
         statement.executeUpdate(query);
         connection.commit();
         connection.setAutoCommit(false);
-        
+
         tablesNames.add(table.getName().toUpperCase());
     }
 
